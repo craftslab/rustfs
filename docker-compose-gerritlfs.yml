@@ -81,7 +81,6 @@ services:
     networks:
       - rustfs-network
     restart: unless-stopped
-    read_only: true
     depends_on:
       - rustfs
 
