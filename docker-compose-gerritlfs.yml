@@ -27,14 +27,14 @@ services:
       - RUSTFS_OBJECT_CACHE_TTL_SECS=300
 
     volumes:
-      - rustfs_data_0:/data/rustfs0
-      - rustfs_data_1:/data/rustfs1
-      - rustfs_data_2:/data/rustfs2
-      - rustfs_data_3:/data/rustfs3
-      - logs:/app/logs
+      - ./deploy/data/pro:/data
+      - ./deploy/logs:/app/logs
     networks:
       - rustfs-network
     restart: unless-stopped
+    depends_on:
+      volume-permission-helper:
+        condition: service_completed_successfully
     healthcheck:
       test:
         [
@@ -51,14 +51,12 @@ services:
   volume-permission-helper:
     image: alpine
     volumes:
-      - rustfs_data_0:/data0
-      - rustfs_data_1:/data1
-      - rustfs_data_2:/data2
-      - rustfs_data_3:/data3
-      - logs:/logs
+      - ./deploy/data/pro:/data
+      - ./deploy/logs:/app/logs
     command: >
       sh -c "
-        chown -R 10001:10001 /data0 /data1 /data2 /data3 /logs &&
+        mkdir -p /data/rustfs0 /data/rustfs1 /data/rustfs2 /data/rustfs3 &&
+        chown -R 10001:10001 /data /app/logs &&
         echo 'Volume Permissions fixed' &&
         exit 0
       "
@@ -74,7 +72,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ./certs:/etc/nginx/certs:ro
     tmpfs:
       - /var/run
@@ -89,10 +87,3 @@ services:
 
 networks:
   rustfs-network:
-
-volumes:
-  rustfs_data_0:
-  rustfs_data_1:
-  rustfs_data_2:
-  rustfs_data_3:
-  logs:
