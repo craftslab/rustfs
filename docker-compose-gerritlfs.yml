@@ -53,13 +53,13 @@ services:
     volumes:
       - ./deploy/data/pro:/data
       - ./deploy/logs:/app/logs
-    command: >
-      sh -c "
-        mkdir -p /data/rustfs0 /data/rustfs1 /data/rustfs2 /data/rustfs3 &&
-        chown -R 10001:10001 /data /app/logs &&
-        echo 'Volume Permissions fixed' &&
-        exit 0
-      "
+    command:
+      - /bin/sh
+      - -c
+      - |
+        mkdir -p /data/rustfs0 /data/rustfs1 /data/rustfs2 /data/rustfs3
+        chown -R 10001:10001 /data /app/logs
+        echo Volume Permissions fixed
     restart: "no"
 
   # NGINX reverse proxy
